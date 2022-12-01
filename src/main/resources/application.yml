@@ -1,0 +1,6 @@
+spring:
+  #codec:
+    #max-in-memory-size: 5MB
+  application:
+    services:
+      get_string: http://localhost:8081
