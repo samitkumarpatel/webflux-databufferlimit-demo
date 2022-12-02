@@ -26,7 +26,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 @AutoConfigureWireMock(port = 0)
 class DatabufferDemoApplicationTests {
 
-	WebTestClient webTestClient;
+	WebTestClient.Builder builder;
+
 	@Autowired
 	ApplicationContext applicationContext;
 
@@ -37,7 +38,8 @@ class DatabufferDemoApplicationTests {
 	@BeforeEach
 	void setUp() {
 		//webTestClient = WebTestClient.bindToServer().build();
-		webTestClient = WebTestClient.bindToApplicationContext(applicationContext).build();
+		//webTestClient = WebTestClient.bindToApplicationContext(applicationContext).build();
+		builder = WebTestClient.bindToApplicationContext(applicationContext).configureClient();
 	}
 
 	@DynamicPropertySource
@@ -55,8 +57,10 @@ class DatabufferDemoApplicationTests {
 			.willReturn(aResponse()
                 .withBodyFile("string.txt"))); */
 
-		webTestClient.
-				get()
+		builder
+				.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(5 * 1024 * 1024))
+				.build()
+				.get()
 				.uri("/string")
 				.accept(MediaType.TEXT_PLAIN)
 				.exchange()
